@@ -1,6 +1,4 @@
-// This script.js file is used to generate a tool that allows the user to select a file from their computer and then it compares their file with the output.txt file in this project for unique words that only exist in one file and not the other.
-
-// This function is used to read the file that the user selects and then it reads the file and returns the contents of the file.
+// Function to read the content of a selected file
 function readFile(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -10,21 +8,21 @@ function readFile(file) {
     });
 }
 
-// This function is used to compare the two files and then it returns the unique words that only exist in one file and not the other.
-function compareFiles(file1, file2) {
-    const words1 = file1.split(' ');
-    const words2 = file2.split(' ');
+// Function to compare two files and return unique words
+function compareFiles(file1Content, file2Content) {
+    const words1 = new Set(file1Content.split(/\s+/));
+    const words2 = new Set(file2Content.split(/\s+/));
 
     const uniqueWords = new Set();
 
     for (const word of words1) {
-        if (!words2.includes(word)) {
+        if (!words2.has(word)) {
             uniqueWords.add(word);
         }
     }
 
     for (const word of words2) {
-        if (!words1.includes(word)) {
+        if (!words1.has(word)) {
             uniqueWords.add(word);
         }
     }
@@ -32,28 +30,45 @@ function compareFiles(file1, file2) {
     return Array.from(uniqueWords);
 }
 
-// This function is used to display the unique words that only exist in one file and not the other.
+// Function to display unique words on the page
 function displayUniqueWords(uniqueWords) {
     const uniqueWordsElement = document.getElementById('unique-words');
-    uniqueWordsElement.innerHTML = uniqueWords.join(', ');
-}
-
-// This function is used to handle the file selection and then it reads the file and compares the two files and then displays the unique words that only exist in one file and not the other.
-async function handleFileSelection(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const fileContent = await readFile(file);
-        const outputContent = await fetch('output.txt').then(response => response.text());
-        const uniqueWords = compareFiles(fileContent, outputContent);
-        displayUniqueWords(uniqueWords);
+    if (uniqueWords.length === 0) {
+        uniqueWordsElement.textContent = 'No unique words found.';
+    } else {
+        uniqueWordsElement.textContent = 'Unique words:\n' + uniqueWords.join(', ');
     }
 }
 
-// This function is used to add an event listener to the file input element.
+// Function to handle the comparison of the two selected files
+async function handleFileComparison() {
+    const fileInput1 = document.getElementById('file-input-1');
+    const fileInput2 = document.getElementById('file-input-2');
+
+    const file1 = fileInput1.files[0];
+    const file2 = fileInput2.files[0];
+
+    if (file1 && file2) {
+        try {
+            const [file1Content, file2Content] = await Promise.all([
+                readFile(file1),
+                readFile(file2)
+            ]);
+
+            const uniqueWords = compareFiles(file1Content, file2Content);
+            displayUniqueWords(uniqueWords);
+        } catch (error) {
+            console.error('Error reading files:', error);
+        }
+    } else {
+        alert('Please select both files.');
+    }
+}
+
+// Main function to set up event listeners
 function main() {
-    const fileInput = document.getElementById('file-input');
-    fileInput.addEventListener('change', handleFileSelection);
+    const compareButton = document.getElementById('compare-button');
+    compareButton.addEventListener('click', handleFileComparison);
 }
 
 main();
-
