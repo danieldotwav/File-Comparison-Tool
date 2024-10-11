@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Comparison Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        #unique-words {
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Compare Two Text Files</h1>
+    <p>Select two text files to compare:</p>
+    <input type="file" id="file-input-1" accept=".txt" />
+    <input type="file" id="file-input-2" accept=".txt" />
+    <button id="compare-button">Compare Files</button>
+    <div id="unique-words"></div>
+    <script src="script.js"></script>
+</body>
+</html>
